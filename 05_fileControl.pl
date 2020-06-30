@@ -19,11 +19,11 @@ my @originData = (
 ### Create ####
 my $currentDir = getcwd;
 my $targetDir = "$currentDir/test_dir01";
-print createCsvFile('testfile1.csv',$targetDir,@originData) . "\n";
-
+my $testFile1 =  createCsvFile('testfile1.csv',$targetDir,@originData);
+print $testFile1 ."\n";
 
 ###  Read  ####
-
+print readCsvFile($testFile1);
 
 
 ### Update ####
@@ -37,6 +37,26 @@ print createCsvFile('testfile1.csv',$targetDir,@originData) . "\n";
 ########### Function ##########
 ###############################
 
+sub readCsvFile {
+    my ($fileName) = @_;
+    print "readCsvFile\n";
+
+    open (IN, $fileName) or die "$!";
+    my @resList = ();
+    
+    while(<IN>) {
+        chomp ($_); # It removes characters at the end of strings corresponding($/). 
+
+        my @data = split(/,/, $_); # make list seperated (,)
+
+        print "------ read file result -------\n";
+        print "$data[0],$data[1],$data[2]\n";
+        push (@resList , @data); 
+    }
+   
+    close(IN); 
+    return @resList;
+}
 
 sub createCsvFile {
     my ($fileName,$targetDir,@data) = @_;
