@@ -2,7 +2,7 @@
 use strict; 
 use warnings;
 use Cwd;
-
+use File::Path;
 
 ###############################
 ###########   Main   ##########
@@ -24,18 +24,94 @@ print $testFile1 ."\n";
 
 ###  Read  ####
 print readCsvFile($testFile1);
-
+print "\n";
 
 ### Update ####
+my @appendData = (
+    ['tiger16','tiger17','tiger18'],
+    ['tiger19','tiger20','tiger21'],
+    ['tiger22','tiger23','tiger24'],
+);
 
+appendCsvFile($testFile1, @appendData);
+
+print readCsvFile($testFile1);
+print "\n";
 
 
 ### Delete ####
+#deleteDir($targetDir,0);
+
+#deleteFile($testFile1);
+
+deleteDir($targetDir,1);
+
+exit 0;
 
 
 ###############################
 ########### Function ##########
 ###############################
+
+# flg : 0 normal , flg : 1 force delete; if you allocate flg 1 you can delete not empty dir. 
+sub deleteDir {
+    my ($targetDir,$flg) = @_;
+    print "deleteDir\n";
+
+    if ($targetDir eq '') {
+        print "param is null \n";
+    }
+
+    if ($flg eq '' || $flg eq 0) {
+        rmdir ($targetDir) or die "failure to delete dir [$targetDir]\n";
+    } else {
+        # use File::Path:rmtree
+        rmtree($targetDir) or die "fafilure to force delete dir [$targetDir]\n";
+    }
+
+    if (-e $targetDir){
+        print "Directory '$targetDir' still exists\n";
+        return 1;
+    } else {
+        print "Directory '$targetDir' deleted.\n";
+        return 0;
+    }
+}
+
+sub appendCsvFile {
+    my ($fileName, @data) = @_;
+    print "appendCsvFile\n";
+
+    if ($fileName eq '' | !@data) {
+        print "param is null filename [$fileName], data [@data]\n";
+        return '';
+    }
+
+    # -e  File or directory exists
+    if ( -e $fileName) {
+        print "File is exist! [$fileName]\n";
+    } else {
+        print "File is not exist! [$fileName]\n";
+    }
+
+    # -r  File or directory is readable
+    # -w  File or directory is writable
+    if (! -r $fileName && ! -w $fileName) {
+        print "This file can't read or write \n";
+        return '';
+    }
+
+    open (PUT, ">>$fileName") or die "$!";
+
+    foreach my $var (@data) {
+        my @target = @$var;
+        print PUT makeOneStrFromList(",",@target) . "\n";
+    }
+    
+    close(PUT);
+    return $fileName;
+}
+
 
 sub readCsvFile {
     my ($fileName) = @_;
