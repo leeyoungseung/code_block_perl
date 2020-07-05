@@ -3,6 +3,20 @@ use strict;
 use warnings;
 use LWP::UserAgent; # yum install perl perl-libwww-perl
 
+################## XML Parsing ##########################
+# It was so difficult to clear XML library's dependeny problem.
+# So I'll retry when I finish all chapter of code_block project.  
+#require './lib/XML-Parser-2.46/Parser.pm';
+#require './lib/XML-Parser-2.46/Expat/Expat.pm';
+#use lib './lib/XML';
+#use lib './lib/XML/Expat';
+#use lib './lib';
+#use XML::Parser; # perl -MCPAN -e shell; install XML::Parser
+################## XML Parsing ##########################
+
+use JSON;
+use Data::Dumper;
+
 ###############################
 ###########   Main   ##########
 ###############################
@@ -84,10 +98,48 @@ my $testJson ='[{
 requestPostWithJSON($testPostJsonUrl, $testJson);
 
 
+#my $data = parseJson($testJson);
+my $data = decode_json($testJson);
+print encode_json($data);
+print "\n";
+print "data : " . $data . "\n"; # Array
+my @ary = $data;
+print "ary[0] : " . $ary[0] . "\n";
+print "ary[1] : " . $ary[1] . "\n";
+print "\n";
+
+foreach my $i (@$data) {
+   print $i -> {Contents};
+   print "\n";
+   
+}
+
+
+
+#my %hash1 = %$data;
+#print Dumper %hash1;
+#print "\n";
+
+
+
 
 ###############################
 ########### Function ##########
 ###############################
+
+sub parseJson {
+    my ($json) = @_;
+    print "parseJson\n";
+
+    if ($json eq '') {
+        print "data is null\n";
+    }
+
+    return decode_json($json);
+
+}
+
+
 sub requestPostWithJSON {
     my ($url, $json) = @_;
     print "requestPostWithJSON\n";
